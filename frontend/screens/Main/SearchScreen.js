@@ -104,16 +104,16 @@ const SearchScreen = () => {
                 <Text style={styles.modalText}>{selectedRestaurant.name}</Text>
                 <Text>Rating: {selectedRestaurant.rating}</Text>
                 <Text>Reviews: {selectedRestaurant.review_count}</Text>
-                {/* ここにその他の詳細情報を表示 */}
+                
                 <Button
-  title="地図で見る"
+  title="Map"
   onPress={() => openMap(selectedRestaurant.coordinates.latitude, selectedRestaurant.coordinates.longitude)}
 />
 
               </>
             )}
             <Button
-              title="閉じる"
+              title="Close"
               onPress={() => setIsModalVisible(!isModalVisible)}
             />
           </View>
