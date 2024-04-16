@@ -104,7 +104,6 @@ const SearchScreen = () => {
                 <Text style={styles.modalText}>{selectedRestaurant.name}</Text>
                 <Text>Rating: {selectedRestaurant.rating}</Text>
                 <Text>Reviews: {selectedRestaurant.review_count}</Text>
-<<<<<<< HEAD
                 <TouchableOpacity
                   style={[styles.button, styles.buttonClose]}
                   onPress={() => openMap(selectedRestaurant.coordinates.latitude, selectedRestaurant.coordinates.longitude, selectedRestaurant.name)}
@@ -119,20 +118,6 @@ const SearchScreen = () => {
             >
               <Text style={styles.searchButtonText}>Close</Text>
             </TouchableOpacity>
-=======
-                
-                <Button
-  title="Map"
-  onPress={() => openMap(selectedRestaurant.coordinates.latitude, selectedRestaurant.coordinates.longitude)}
-/>
-
-              </>
-            )}
-            <Button
-              title="Close"
-              onPress={() => setIsModalVisible(!isModalVisible)}
-            />
->>>>>>> a0125ee42328cecd1193adf175c531fe4740d541
           </View>
         </View>
       </Modal>
