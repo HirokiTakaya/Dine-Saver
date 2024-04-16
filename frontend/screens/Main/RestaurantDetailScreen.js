@@ -9,7 +9,7 @@ const RestaurantDetailScreen = () => {
     const fetchRestaurantData = async () => {
       try {
         
-        const response = await fetch('http://localhost:3000/api/search?location=${encodeURIComponent(location)}&term=${encodeURIComponent(term)}');
+        const response = await fetch('https://dine-saver.com/api/search?location=${encodeURIComponent(location)}&term=${encodeURIComponent(term)}');
         const data = await response.json();
         setRestaurant(data.businesses[0]); 
         setIsVisible(true); 

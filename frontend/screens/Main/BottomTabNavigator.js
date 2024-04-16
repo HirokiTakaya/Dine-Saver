@@ -1,9 +1,6 @@
-import React, { useRef,useState } from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { getAuth, signOut } from 'firebase/auth';
+import React, { useRef, useState } from 'react';
+import { Modal, View, Text, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'react-native';
 
-// Import ProfileScreen, SearchScreen, TrackingExpense, RecordedExpense
-// Please adjust the paths as necessary
 import SearchScreen from './SearchScreen';
 import TrackingExpense from './TrackingExpense';
 import RecordedExpense from './RecordedExpense';
@@ -12,24 +9,42 @@ import { useAuth } from '../Logins/AuthContext';
 const BottomTabNavigator = () => {
   const [activeTab, setActiveTab] = useState('Search');
   const [modalVisible, setModalVisible] = useState(false);
-  const { signOut } = useAuth(); // Get signOut from useAuth
- 
-  const logout = () => {
-    signOut() // Logout from Firebase Auth
-    .then(() => {
+  const { signOut } = useAuth();
+  const tabWidth = Dimensions.get('window').width / 4;
+
+  const logout = async () => {
+    try {
+      await signOut();
       Alert.alert("Logout Successful", "You have been logged out.");
-      // Add any other state updates or navigation actions here if necessary
-    })
-    .catch((error) => {
+    } catch (error) {
       Alert.alert("Logout Failed", error.message);
-    });
+    }
   };
-  
-  const Tab = ({ name, onPress }) => (
+
+  const Tab = ({ name, onPress, isLong }) => (
     <TouchableOpacity
-      style={activeTab === name ? styles.tabActive : styles.tab}
-      onPress={onPress || (() => setActiveTab(name))}>
-      <Text style={activeTab === name ? styles.tabTextActive : styles.tabText}>
+      style={[
+        styles.tab,
+        activeTab === name && styles.tabActive,
+        isLong && { height: 72 }
+      ]}
+      onPress={onPress || (() => {
+        if (name === "Logout") {
+          setModalVisible(true);
+        } else {
+          setActiveTab(name);
+        }
+      })}
+      activeOpacity={0.7}
+      accessibilityLabel={`Switch to ${name}`}
+    >
+      <Text
+        style={[
+          activeTab === name ? styles.tabTextActive : styles.tabText,
+          isLong && { fontSize: 12, lineHeight: 16 }
+        ]}
+        numberOfLines={2}
+      >
         {name}
       </Text>
     </TouchableOpacity>
@@ -38,35 +53,33 @@ const BottomTabNavigator = () => {
   return (
     <View style={styles.container}>
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
           setModalVisible(!modalVisible);
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Do you want to logout?</Text>
+            <Text style={styles.modalText}>Do you want to log out?</Text>
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => {
                   setModalVisible(!modalVisible);
-                  logout(); // Execute logout process
+                  logout();
                 }}>
-                <Text style={styles.textStyle}>Yes</Text>
+                <Text style={styles.textStyle}>Logout</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.button, styles.buttonCancel]}
                 onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={styles.textStyle}>No</Text>
+                <Text style={styles.textStyle}>Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
-
       <View style={styles.screenContainer}>
         {activeTab === 'Search' && <SearchScreen />}
         {activeTab === 'Tracking Expense' && <TrackingExpense />}
@@ -74,9 +87,9 @@ const BottomTabNavigator = () => {
       </View>
       <View style={styles.tabBar}>
         <Tab name="Search" />
-        <Tab name="Tracking Expense" />
-        <Tab name="Recorded Expense" />
-        <Tab name="Logout" onPress={() => setModalVisible(true)} />
+        <Tab name="Tracking Expense" isLong />
+        <Tab name="Recorded Expense" isLong />
+        <Tab name="Logout" />
       </View>
     </View>
   );
@@ -94,22 +107,41 @@ const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 10,
-    backgroundColor: '#EEE',
+    paddingVertical: 15,
+    backgroundColor: '#FFF',
+    borderTopWidth: 1,
+    borderTopColor: '#DDD',
   },
   tab: {
     flex: 1,
     alignItems: 'center',
-    padding: 10,
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    backgroundColor: '#2196F3',
+    marginHorizontal: 4,
+    elevation: 3,
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    shadowOffset: { height: 2, width: 0 },
   },
   tabText: {
-    color: 'gray',
+    fontSize: 14,
+    color: '#555',
+    padding: 8,
+    flexShrink: 1,
+    textAlign: 'center',
+    paddingHorizontal: 2,
   },
   tabTextActive: {
-    color: 'tomato',
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#0D47A1',
   },
-
-  
+  tabActive: {
+    backgroundColor: '#E3F2FD',
+  },
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -137,18 +169,17 @@ const styles = StyleSheet.create({
     elevation: 2
   },
   buttonClose: {
-    backgroundColor: "#2196F3",
-    marginRight: 10, 
+    backgroundColor: "#F44336",
+    marginRight: 20,
   },
-
   buttonCancel: {
-    backgroundColor: "red", 
-    marginLeft: 10, 
+    backgroundColor: "#757575",
+    marginLeft: 20,
   },
   modalButtons: {
-    flexDirection: 'row', 
-    justifyContent: 'center', 
-    marginTop: 15, 
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 15,
   },
   textStyle: {
     color: "white",
@@ -157,7 +188,8 @@ const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
-    textAlign: "center"
+    textAlign: "center",
+    fontSize: 18,
   }
 });
 

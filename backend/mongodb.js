@@ -5,7 +5,6 @@ import bcrypt from 'bcrypt';
 
 dotenv.config();
 
-
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -38,7 +37,6 @@ UserProfileSchema.pre('save', async function (next) {
   }
   next();
 });
-
 
 const Expense = mongoose.model('Expense', ExpenseSchema);
 const UserProfile = mongoose.model('UserProfile', UserProfileSchema);

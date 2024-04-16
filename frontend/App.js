@@ -5,8 +5,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as Google from 'expo-auth-session/providers/google';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from './screens/Logins/firebaseConfig';
+import { NavigationProvider } from './screens/Main/NavigationContext'; 
 
-// Screens Import
+
 import AuthScreen from './screens/Logins/AuthScreen';
 import LoginScreen from './screens/Logins/LoginScreen';
 import SignUp from './screens/Logins/SignUp';
@@ -23,7 +24,7 @@ function AppInner() {
   const { user, signIn } = useAuth();
   const navigationRef = useRef(null);
 
-  // Google SignIn Logic
+  
   useEffect(() => {
     const initGoogleSignIn = async () => {
       
@@ -66,7 +67,9 @@ function AppInner() {
 export default function App() {
   return (
     <AuthProvider>
+
       <AppInner />
-    </AuthProvider>
+  
+  </AuthProvider>
   );
 }

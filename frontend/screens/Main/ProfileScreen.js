@@ -36,7 +36,7 @@ const ProfileScreen = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/user/profile', {
+      const response = await fetch('https://dine-saver.com/api/user/profile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,48 +1,53 @@
-import React, { createContext, useState, useContext } from 'react';
-import { getAuth, signOut as firebaseSignOut } from 'firebase/auth';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { getAuth, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
 
 const auth = getAuth();
 
+export const AuthContext = createContext();
 
-export const AuthContext = createContext({
-  user: null,
-  signIn: async (user) => {},
-  signOut: async () => { 
-    try {
-      await firebaseSignOut(auth); 
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
-  },
-});
-
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
-
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
+  useEffect(() => {
+    
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+      
+        setUser(currentUser);
+      } else {
+
+        setUser(null);
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const signIn = async (email, password) => {
+    try {
+     
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+     
+      console.log(userCredential.user); 
+      
+    } catch (error) {
+      
+      console.error(error);
+      throw error; 
+    }
   
-  const signIn = (user) => {
-    setUser(user);
   };
 
   const signOut = async () => {
     try {
-      await firebaseSignOut(auth); 
-      setUser(null); 
+      await firebaseSignOut(auth);
+ 
     } catch (error) {
       console.error("Logout error:", error);
     }
   };
-
 
   return (
     <AuthContext.Provider value={{ user, signIn, signOut }}>
